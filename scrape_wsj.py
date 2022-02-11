@@ -23,9 +23,7 @@ for i in range(1, 6): # pages 1-5, will not return error if not seen
                 for article in soup2.select('article'):
                     blurb += " Summary: " + remove_spaces(article.h2.text) + ". " + remove_spaces(article.p.text)
 
-                #print("What are the names and stock tickers of the companies most associated with the news?\n")
                 print("How do you think the stock associated with this news will change?\n")
                 print(str("\""+blurb+"\"\n"))
 
-                #print("How will the prices of each of these companies change as a result of this news? Explain.")
                 print('-' * 80)
