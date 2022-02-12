@@ -12,11 +12,6 @@ import json
 import os
 import pyuser_agent
 
-PROXY_USERNAME = 'sp81437467'
-PROXY_PASSWORD = 'def1Fund'
-proxy = f"http://{PROXY_USERNAME}:{PROXY_PASSWORD}@gate.smartproxy.com:7000"
-
-
 def get_headers():
     return {'User-Agent': pyuser_agent.UA().random}
 
@@ -45,7 +40,7 @@ def remove_spaces(string):
 
 # Gets list of date urls to process
 def get_dates():
-    start_date = date(2022, 2, 1)
+    start_date = date(2021, 9, 1)
     end_date = date.today()
     delta = end_date - start_date
 
@@ -56,7 +51,7 @@ def get_dates():
 
 def scrape_article(url):
     soup = BeautifulSoup(
-        requests.get(url, headers=get_headers(), proxies={'http': proxy, 'https': proxy}).content.decode('utf-8',
+        requests.get(url, headers=get_headers()).content.decode('utf-8',
                                                                                                          'ignore'),
         'html.parser')
 
@@ -95,8 +90,8 @@ def scrape_day(date):
 
     relevant_headlines = ["Business", "Finance"]  # "Markets", "Finance", "Financial", "Earnings"]
     for i in range(1, 6):  # pages 1-5, will not return error if not seen
-        soup = BeautifulSoup(requests.get(url + f"?page={i}", headers=get_headers(),
-                                          proxies={'http': proxy, 'https': proxy}).content.decode('utf-8', 'ignore'),
+        soup = BeautifulSoup(requests.get(url + f"?page={i}", headers=get_headers()
+                                          ).content.decode('utf-8', 'ignore'),
                              'html.parser')
 
         for article in soup.select('article'):
