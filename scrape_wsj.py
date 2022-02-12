@@ -45,7 +45,7 @@ def remove_spaces(string):
 
 # Gets list of date urls to process
 def get_dates():
-    start_date = date(2022, 1, 1)
+    start_date = date(2022, 2, 1)
     end_date = date.today()
     delta = end_date - start_date
 
