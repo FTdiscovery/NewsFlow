@@ -5,13 +5,23 @@ Creates json for stock
 import os
 import openai
 import json
+from dotenv import load_dotenv
+from datetime import datetime
+
+load_dotenv()
+
+org_name = os.getenv('ORG_NAME')
+api_key = os.getenv('API_KEY')
 
 openai.organization = "org-GhuqPhpoi029dThqqUHRulbB"
-openai.api_key = input("Input your API key:") #use ur own key
+openai.api_key = api_key
 openai.Engine.list()
 
 # Opening JSON file
-f = open('data/wsj/2022-02-11.json')
+
+now = datetime.now()
+date = now.strftime("%m/%d/%Y")
+f = open(f'data/wsj/{date}.json')
 
 # returns JSON object as
 # a dictionary
