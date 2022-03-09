@@ -1,16 +1,17 @@
+import copy
 import numpy as np
 import os 
 import faiss                   
 import json
 
+from constants import ARTICLES_FNAME
 from transformers import DistilBertTokenizer, DistilBertModel
 from tqdm import tqdm
 
-DATA_DIR = 'data/wsj'
 VEC_DIM = 768
 HARD_STOP = float('inf')
-LOADED = True
-K = 10
+LOADED = False
+K = 4
 
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 model = DistilBertModel.from_pretrained("distilbert-base-uncased")
@@ -25,14 +26,14 @@ def get_vector(text):
 
 all_articles = []
 
-for fname in os.listdir(DATA_DIR): 
-    full_fname = f'{DATA_DIR}/{fname}'
-    with open(full_fname, 'r') as f: 
-        new_articles = json.loads(f.read())
-        all_articles.extend(new_articles)
+with open(ARTICLES_FNAME) as f:
+    all_articles = json.load(f)
 
 all_articles = all_articles[::-1] # Most to least recent
-        
+
+for i, article in enumerate(all_articles):
+    article['id'] = i
+
 if not LOADED: 
     print("Loading vectors...")
     vecs = []
@@ -51,22 +52,33 @@ index = faiss.IndexFlatL2(VEC_DIM)
 
 index.add(vecs) 
 
-for i, article in enumerate(all_articles):
-    print()
-    print()
-    print()
-    print(f"Searching article {article['title']}")
+def find_related(id):
+    id = int(id)
+    article = all_articles[id]
+    neighbors = []
+
     vec = get_vector(article['title'])
     vec = vec.reshape(1, -1)
     d, inds = index.search(vec, K)
     inds = inds[0]
-    j = 1
     for ix in inds:
-        if ix == i: continue
         nbr = all_articles[ix]
-        print(f"Neighbor {j}")
-        print(f"Article title: {nbr['title']}")
-        print()
-        j += 1    
-    breakpoint()
+        if nbr['link'] == article['link']: continue # Avoid duplication
+        neighbors.append(copy.deepcopy(nbr))
+    return neighbors
 
+for i, article in enumerate(all_articles):
+    neighbors = find_related(i)
+    article['nbrs'] = neighbors
+
+if __name__ == '__main__':
+    for i, article in enumerate(all_articles):
+        print()
+        print()
+        print()
+        print(f"Searching article {article['title']}")
+        neighbors = get_related(i)
+        for j, nbr in enumerate(neighbors): 
+            print(f"Neighbor {j + 1}")
+            print(f"Article title: {nbr['title']}")
+            print()

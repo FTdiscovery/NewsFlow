@@ -1,18 +1,18 @@
 import json
 import flask
 
+from process_articles import all_articles
 from flask import jsonify
 from flask import Flask
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 
-FNAME = 'current.json'
-
 @app.route("/")
 def get():
-    with open(FNAME) as f:
-        lis = json.load(f)
-    return jsonify(lis)
+    res = jsonify(all_articles)
+    res.headers.add('Access-Control-Allow-Origin', '*')
+    return res
 
 if __name__ == '__main__':
     app.run(threaded=True, host='0.0.0.0', port=5000)
